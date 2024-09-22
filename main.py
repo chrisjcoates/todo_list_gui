@@ -27,6 +27,9 @@ class CreateTodo(QWidget):
         self.delete_btn = QPushButton("delete")
 
         self.todo_widget_layout = QHBoxLayout()
+        self.todo_widget_layout.setContentsMargins(10, 0, 10, 0)
+        self.todo_widget_layout.setSpacing(5)
+
         self.todo_widget_layout.addWidget(self.todo_check)
         self.todo_widget_layout.addWidget(self.todo_name)
         self.todo_widget_layout.addWidget(self.edit_btn)
@@ -81,6 +84,7 @@ class MainWindow(QMainWindow):
 
         # Create todo list widget
         self.list_widget = QWidget()
+        # self.list_widget.setStyleSheet("border: 1px solid white;")
         self.list_widget_layout = QVBoxLayout()
         self.list_widget_layout.setAlignment(Qt.AlignTop)
         self.list_widget.setLayout(self.list_widget_layout)
@@ -112,8 +116,10 @@ class MainWindow(QMainWindow):
         self.filter_widget_layout.addWidget(self.complete_filter_btn)
 
     def create_todo(self):
-        todo = CreateTodo("Make coffee")
-        self.list_widget_layout.addWidget(todo)
+        if self.todo_input.text:
+            todo = CreateTodo(self.todo_input.text())
+            self.list_widget_layout.addWidget(todo)
+            self.todo_input.clear()
 
 
 app = QApplication([])

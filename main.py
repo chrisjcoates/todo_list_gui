@@ -6,8 +6,33 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QLineEdit,
     QPushButton,
+    QCheckBox,
+    QLabel,
 )
 from PyQt5.QtCore import Qt
+
+
+class CreateTodo(QWidget):
+    def __init__(self, name):
+        super().__init__()
+
+        self.name = name
+
+        self.todo_widget = QWidget()
+
+        self.todo_check = QCheckBox()
+        self.todo_check.setChecked(False)
+        self.todo_name = QLabel(self.name)
+        self.edit_btn = QPushButton("edit")
+        self.delete_btn = QPushButton("delete")
+
+        self.todo_widget_layout = QHBoxLayout()
+        self.todo_widget_layout.addWidget(self.todo_check)
+        self.todo_widget_layout.addWidget(self.todo_name)
+        self.todo_widget_layout.addWidget(self.edit_btn)
+        self.todo_widget_layout.addWidget(self.delete_btn)
+
+        self.setLayout(self.todo_widget_layout)
 
 
 class MainWindow(QMainWindow):
@@ -18,8 +43,12 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Todo List")
         self.resize(640, 600)
 
+        todo_list = []
+
         self.create_layout_widgets()
         self.add_controls()
+
+        self.todo_add_btn.clicked.connect(self.create_todo)
 
     def create_layout_widgets(self):
         # Create central widget
@@ -52,18 +81,10 @@ class MainWindow(QMainWindow):
 
         # Create todo list widget
         self.list_widget = QWidget()
-        self.list_widget.setStyleSheet("border: 1px solid white;")
         self.list_widget_layout = QVBoxLayout()
         self.list_widget_layout.setAlignment(Qt.AlignTop)
         self.list_widget.setLayout(self.list_widget_layout)
         self.main_widget_layout.addWidget(self.list_widget)
-
-        # Create todo widget
-        self.todo_widget = QWidget()
-        self.todo_widget.setStyleSheet("border: 1px solid white;")
-        self.todo_widget_layout = QHBoxLayout()
-        self.todo_widget.setLayout(self.todo_widget_layout)
-        self.list_widget_layout.addWidget(self.todo_widget)
 
         # Create count widget
         self.count_widget = QWidget()
@@ -90,8 +111,9 @@ class MainWindow(QMainWindow):
         self.filter_widget_layout.addWidget(self.active_filter_btn)
         self.filter_widget_layout.addWidget(self.complete_filter_btn)
 
-    def add_todo(self):
-        pass
+    def create_todo(self):
+        todo = CreateTodo("Make coffee")
+        self.list_widget_layout.addWidget(todo)
 
 
 app = QApplication([])

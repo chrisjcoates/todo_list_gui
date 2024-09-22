@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QCheckBox,
     QLabel,
+    QMessageBox,
 )
 from PyQt5.QtCore import Qt
 
@@ -21,10 +22,14 @@ class CreateTodo(QWidget):
         self.todo_widget = QWidget()
 
         self.todo_check = QCheckBox()
+        self.todo_check.setMaximumWidth(40)
         self.todo_check.setChecked(False)
         self.todo_name = QLabel(self.name)
+        self.todo_name.setAlignment(Qt.AlignLeft)
         self.edit_btn = QPushButton("edit")
+        self.edit_btn.setMaximumWidth(60)
         self.delete_btn = QPushButton("delete")
+        self.delete_btn.setMaximumWidth(60)
 
         self.todo_widget_layout = QHBoxLayout()
         self.todo_widget_layout.setContentsMargins(10, 0, 10, 0)
@@ -116,10 +121,17 @@ class MainWindow(QMainWindow):
         self.filter_widget_layout.addWidget(self.complete_filter_btn)
 
     def create_todo(self):
-        if self.todo_input.text:
+        if len(self.todo_input.text()) > 0:
             todo = CreateTodo(self.todo_input.text())
             self.list_widget_layout.addWidget(todo)
             self.todo_input.clear()
+        else:
+            msgbox = QMessageBox()
+            msgbox.setWindowTitle("Empty todo")
+            msgbox.setText("You can't submit a blank todo")
+            msgbox.setIcon(QMessageBox.Warning)
+            msgbox.setStandardButtons(QMessageBox.Ok)
+            msgbox.exec_()
 
 
 app = QApplication([])

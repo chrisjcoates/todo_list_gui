@@ -19,6 +19,7 @@ class MainWindow(QMainWindow):
         self.resize(640, 600)
 
         self.create_layout_widgets()
+        self.add_controls()
 
     def create_layout_widgets(self):
         # Create central widget
@@ -28,23 +29,23 @@ class MainWindow(QMainWindow):
 
         # Create main widget
         self.main_widget = QWidget()
-        self.main_widget.setStyleSheet("border: 1px solid white;")
+        # self.main_widget.setStyleSheet("border: 1px solid white;")
         self.main_widget_layout = QVBoxLayout()
         self.main_widget.setLayout(self.main_widget_layout)
         self.central_widget_layout.addWidget(self.main_widget)
 
         # Create input widget
         self.input_widget = QWidget()
-        self.input_widget.setMaximumHeight(60)
-        self.input_widget.setStyleSheet("border: 1px solid white;")
+        self.input_widget.setMaximumHeight(50)
+        # self.input_widget.setStyleSheet("border: 1px solid white;")
         self.input_widget_layout = QHBoxLayout()
         self.input_widget.setLayout(self.input_widget_layout)
         self.main_widget_layout.addWidget(self.input_widget)
 
         # Create filter widget
         self.filter_widget = QWidget()
-        self.filter_widget.setMaximumHeight(70)
-        self.filter_widget.setStyleSheet("border: 1px solid white;")
+        self.filter_widget.setMaximumHeight(40)
+        # self.filter_widget.setStyleSheet("border: 1px solid white;")
         self.filter_widget_layout = QHBoxLayout()
         self.filter_widget.setLayout(self.filter_widget_layout)
         self.main_widget_layout.addWidget(self.filter_widget)
@@ -73,6 +74,24 @@ class MainWindow(QMainWindow):
         self.main_widget_layout.addWidget(self.count_widget)
 
         self.setCentralWidget(self.central_widget)
+
+    def add_controls(self):
+
+        # Create input controls
+        self.todo_input = QLineEdit()
+        self.todo_input.setMaximumHeight(70)
+        self.todo_add_btn = QPushButton("add")
+        self.input_widget_layout.addWidget(self.todo_input)
+        self.input_widget_layout.addWidget(self.todo_add_btn)
+
+        # Create filter controls
+        self.active_filter_btn = QPushButton("Active")
+        self.complete_filter_btn = QPushButton("Filter")
+        self.filter_widget_layout.addWidget(self.active_filter_btn)
+        self.filter_widget_layout.addWidget(self.complete_filter_btn)
+
+    def add_todo(self):
+        pass
 
 
 app = QApplication([])

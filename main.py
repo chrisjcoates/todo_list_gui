@@ -48,15 +48,24 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        # Settings
         self.setWindowTitle("Todo List")
         self.resize(640, 600)
 
-        todo_list = []
+        # Todo lists
+        self.active_todo_list = []
+        self.complete_todo_list = []
 
+        # Create layout and add controls
         self.create_layout_widgets()
         self.add_controls()
 
-        self.todo_add_btn.clicked.connect(self.create_todo)
+        # Add a todo
+        self.todo_add_btn.clicked.connect(self.add_todo)
+        self.complete_filter_btn.clicked.connect(self.complete_click)
+        self.active_filter_btn.clicked.connect(self.active_click)
+
+        # Complete a todo
 
     def create_layout_widgets(self):
         # Create central widget
@@ -74,7 +83,6 @@ class MainWindow(QMainWindow):
         # Create input widget
         self.input_widget = QWidget()
         self.input_widget.setMaximumHeight(50)
-        # self.input_widget.setStyleSheet("border: 1px solid white;")
         self.input_widget_layout = QHBoxLayout()
         self.input_widget.setLayout(self.input_widget_layout)
         self.main_widget_layout.addWidget(self.input_widget)
@@ -82,18 +90,24 @@ class MainWindow(QMainWindow):
         # Create filter widget
         self.filter_widget = QWidget()
         self.filter_widget.setMaximumHeight(40)
-        # self.filter_widget.setStyleSheet("border: 1px solid white;")
         self.filter_widget_layout = QHBoxLayout()
         self.filter_widget.setLayout(self.filter_widget_layout)
         self.main_widget_layout.addWidget(self.filter_widget)
 
-        # Create todo list widget
+        # Create todo list widget (active)
         self.list_widget = QWidget()
-        # self.list_widget.setStyleSheet("border: 1px solid white;")
         self.list_widget_layout = QVBoxLayout()
         self.list_widget_layout.setAlignment(Qt.AlignTop)
         self.list_widget.setLayout(self.list_widget_layout)
         self.main_widget_layout.addWidget(self.list_widget)
+
+        # Create todo list widget (complete)
+        self.completed_list_widget = QWidget()
+        self.completed_list_widget_layout = QVBoxLayout()
+        self.completed_list_widget_layout.setAlignment(Qt.AlignTop)
+        self.completed_list_widget.setLayout(self.completed_list_widget_layout)
+        self.main_widget_layout.addWidget(self.completed_list_widget)
+        self.completed_list_widget.hide()
 
         # Create count widget
         self.count_widget = QWidget()
@@ -116,13 +130,19 @@ class MainWindow(QMainWindow):
 
         # Create filter controls
         self.active_filter_btn = QPushButton("Active")
-        self.complete_filter_btn = QPushButton("Filter")
+        self.complete_filter_btn = QPushButton("Complete")
         self.filter_widget_layout.addWidget(self.active_filter_btn)
         self.filter_widget_layout.addWidget(self.complete_filter_btn)
 
-    def create_todo(self):
+    def add_todo(self):
         if len(self.todo_input.text()) > 0:
             todo = CreateTodo(self.todo_input.text())
+
+            todo.todo_check.stateChanged.connect(
+                lambda state, t=todo: self.complete_todo(t, state)
+            )
+
+            self.active_todo_list.append(todo)
             self.list_widget_layout.addWidget(todo)
             self.todo_input.clear()
         else:
@@ -132,6 +152,47 @@ class MainWindow(QMainWindow):
             msgbox.setIcon(QMessageBox.Warning)
             msgbox.setStandardButtons(QMessageBox.Ok)
             msgbox.exec_()
+
+    def complete_click(self):
+
+        self.list_widget.hide()
+        self.completed_list_widget.show()
+
+        for todo in self.active_todo_list:
+            todo.hide()
+
+        for todo in self.complete_todo_list:
+            todo.show()
+
+    def active_click(self):
+        self.list_widget.show()
+        self.completed_list_widget.hide()
+
+        for todo in self.complete_todo_list:
+            todo.hide()
+
+        for todo in self.active_todo_list:
+            todo.show()
+
+    def complete_todo(self, todo, state):
+        if state == Qt.Checked:
+            if todo in self.active_todo_list:
+                todo.todo_name.setStyleSheet("text-decoration: line-through;")
+                self.active_todo_list.remove(todo)
+                self.list_widget_layout.removeWidget(todo)
+                todo.hide()
+
+                self.complete_todo_list.append(todo)
+                self.completed_list_widget_layout.addWidget(todo)
+        else:
+            if todo in self.complete_todo_list:
+                todo.todo_name.setStyleSheet("text-decoration: none;")
+                self.complete_todo_list.remove(todo)
+                self.completed_list_widget_layout.removeWidget(todo)
+                todo.hide()
+
+                self.active_todo_list.append(todo)
+                self.list_widget_layout.addWidget(todo)
 
 
 app = QApplication([])
